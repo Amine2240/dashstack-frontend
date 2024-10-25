@@ -1,6 +1,9 @@
 "use client";
 import axios from "axios";
 import React from "react";
+import up from "@/public/images/up.svg";
+import down from "@/public/images/down.svg";
+import Image from "next/image";
 
 interface AnomalyProps {
   machine_id: string;
@@ -15,13 +18,32 @@ export default function Anomaly({
 }: AnomalyProps) {
   const [showText, setShowText] = React.useState(false);
 
+  const displayValue = (value, min, max) => {
+    if (value > max) {
+      return (
+        <>
+          <Image src={up} alt="up" />${(value - max).toFixed(2)} above
+        </>
+      );
+    } else if (value < min) {
+      return (
+        <>
+          <Image src={down} alt="down" />${(min - value).toFixed(2)} bellow
+        </>
+      );
+    } else {
+      return value; // within range
+    }
+  };
+  // const [min, max] = KpiInterval.match(/[\d.]+/g).map(Number);
+
   return (
     <div
       className={`bg-[#F3EDED] border-0 border-b-[1px] border-gray-400 py-5 px-4`}
     >
       <div className="flex items-center justify-between font-semibold">
         <div className="flex items-center gap-6">
-          <input type="checkbox" className="h-5 w-5 accent-[#333333]" />
+          {/* <input type="checkbox" className="h-5 w-5 accent-[#333333]" /> */}
           <div className="flex items-center justify-between text-start w-32 mr-6 ">
             {kpiName}
           </div>
@@ -57,12 +79,23 @@ export default function Anomaly({
           <p className="text-center font-semibold "> No anomaly </p>
         ) : (
           annomalies.map((anomaly, index) => (
-            <div
-              key={index}
-              className=" text-red-500 flex w-full place-content-between"
-            >
-              <p> anomaly {anomaly.anomId + 1}</p>
-              <p>value = {anomaly.anomVal}</p>
+            <div key={index} className=" flex w-full place-content-between">
+              <p>
+                {" "}
+                anomaly {anomaly.anomId + 1} value = {anomaly.anomVal}
+              </p>
+              <p className=" text-red-500 flex">
+                {displayValue(
+                  anomaly.anomVal,
+                  KpiInterval.match(/[\d.]+/g).map((num) =>
+                    parseFloat(num).toFixed(2)
+                  )[0],
+                  KpiInterval.match(/[\d.]+/g).map((num) =>
+                    parseFloat(num).toFixed(2)
+                  )[1]
+                )}{" "}
+                <span className=" text-black"> the safe interval</span>
+              </p>
               <p>{anomaly.anomTimeStamp}</p>
             </div>
           ))

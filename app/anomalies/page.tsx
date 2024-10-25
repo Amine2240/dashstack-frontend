@@ -32,7 +32,7 @@ export default function Pageanomalies() {
       KpiInterval: "[2.00 - 3.50]",
       anomalies: [
         {
-          anomId: 1,
+          anomId: 0,
           anomVal: 4.12,
           anomTimeStamp: "07/09/2016 10:15:00",
         },
@@ -44,7 +44,7 @@ export default function Pageanomalies() {
       KpiInterval: "[0.75 - 1.25]",
       anomalies: [
         {
-          anomId: 2,
+          anomId: 0,
           anomVal: 1.45,
           anomTimeStamp: "08/10/2016 12:45:00",
         },
@@ -56,7 +56,7 @@ export default function Pageanomalies() {
       KpiInterval: "[3.00 - 4.20]",
       anomalies: [
         {
-          anomId: 3,
+          anomId: 0,
           anomVal: 4.35,
           anomTimeStamp: "09/11/2016 14:00:00",
         },
@@ -68,7 +68,7 @@ export default function Pageanomalies() {
       KpiInterval: "[5.50 - 7.00]",
       anomalies: [
         {
-          anomId: 4,
+          anomId: 0,
           anomVal: 7.25,
           anomTimeStamp: "10/12/2016 16:30:00",
         },
@@ -80,7 +80,7 @@ export default function Pageanomalies() {
       KpiInterval: "[0.10 - 0.50]",
       anomalies: [
         {
-          anomId: 5,
+          anomId: 0,
           anomVal: 0.75,
           anomTimeStamp: "11/01/2017 09:00:00",
         },
@@ -92,13 +92,22 @@ export default function Pageanomalies() {
       KpiInterval: "[1.20 - 1.80]",
       anomalies: [
         {
-          anomId: 6,
+          anomId: 0,
           anomVal: 2.05,
           anomTimeStamp: "12/02/2017 11:45:00",
         },
       ],
     },
   ];
+  const displayValue = (value, min = 1.20, max = 1.80) => {
+  if (value > max) {
+    return `${value - max}`;
+  } else if (value < min) {
+    return `${min - value}`;
+  } else {
+    return value; // within range
+  }
+};
   const [anomalies, setanomalies] = useState(kpiAnomalies);
   const [currentPage, setCurrentPage] = useState(1);
   const [anomaliesPerPage] = useState(5); // Number of anomalies to show per page
@@ -148,7 +157,7 @@ export default function Pageanomalies() {
   };
 
   return (
-    <div>
+    <div className=" overflow-x-hidden">
       {/* <Header /> */}
       <div>
         {loading ? (
