@@ -116,7 +116,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
 
       <div className="flex items-center space-x-5">
         {/* Notifications */}
-        <div className="relative">
+        <div className="relative flex">
           {notificationCount > 0 && (
             <p className="bg-red-500 rounded-full text-center text-sm text-white absolute -right-2 top-0 z-10 px-2">
               {notificationCount === 20 ? "+20" : notificationCount}
@@ -124,6 +124,9 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
           )}
           <Link href={"/notifications"}>
             <FiBell size={30} className="text-gray-700" />
+          </Link>
+          <Link href={"/anomalies"}>
+            <FiBell size={30} className="text-red-700" />
           </Link>
         </div>
         <div
