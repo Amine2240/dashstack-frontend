@@ -25,8 +25,8 @@ const Chat = () => {
     startChat();
   }, []);
 
-  const handleSendMessage = async (e : React.FormEvent) => {
-    e.preventDefault()
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (newMessage.trim() === "") return;
 
     const newMsg = {
@@ -45,9 +45,11 @@ const Chat = () => {
       });
       console.log("response", response);
 
+      const formattedResponse = formatAIResponse(response.data.response);
+
       const reply = {
         id: messages.length + 2,
-        text: response.data.response,
+        text: formattedResponse,
         sender: "ai",
       };
 
@@ -123,3 +125,14 @@ const Chat = () => {
 };
 
 export default Chat;
+// Function to format AI response
+const formatAIResponse = (response) => {
+  return response
+    .replace(/## (.+)/g, "<h2>$1</h2>") // Convert ## to <h2>
+    .replace(/### (.+)/g, "<h3>$1</h3>") // Convert ### to <h3>
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>") // Convert **text** to <strong>
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>") // Convert *text* to <em>
+    .replace(/\n/g, "<br/>") // Convert line breaks to <br/>
+    .replace(/^- (.+)/g, "<li>$1</li>") // Convert bullet points (starting with -)
+    .replace(/<li>(.+)<\/li>/g, "<ul><li>$1</li></ul>"); // Wrap bullet points in <ul>
+};
