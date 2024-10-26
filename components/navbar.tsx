@@ -4,6 +4,7 @@ import { FiMenu, FiBell, FiUser, FiLogOut } from "react-icons/fi"; // Icons for 
 import Link from "next/link";
 import axios from "axios";
 import ProfilePage from "./profile/profilePage";
+import anomay from '@/public/images/anomaly.svg';
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -126,7 +127,10 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             <FiBell size={30} className="text-gray-700" />
           </Link>
           <Link href={"/anomalies"}>
-            <FiBell size={30} className="text-red-700" />
+            <Image
+            src={anomay}
+            alt="icon"
+            />
           </Link>
         </div>
         <div

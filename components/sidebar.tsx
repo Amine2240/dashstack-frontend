@@ -37,7 +37,23 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
     { id: 9, text: "Team", path: "/team", icon: teamicon },
     // { id: 10, text: "Settings", path: "/settings", icon: settingsicon },
     // { id: 11, text: "Logout", path: "/logout", icon: logouticon },
+    {id:10 , text: "Data visualization", path: "/datavisualization", icon: incomesicon},
   ];
+  // const navlinksvisualization = [
+  //   { id: 0, text: "stamping machine", path: "/datavisualization/dashboard", icon: dashboardicon },
+  //   { id: 1, text: "Assigned Tasks", path: "/datavisualization/assignedtasks", icon: tasksicon },
+  //   { id: 2, text: "Machines", path: "/datavisualization/machines", icon: machinesicon },
+  //   { id: 3, text: "Chat with bots", path: "/datavisualization/chatwithbots", icon: chaticon },
+  //   { id: 4, text: "Schedule", path: "/datavisualization/schedule", icon: scheduelicon },
+  //   {
+  //     id: 5,
+  //     text: "Statistiques",
+  //     path: "/datavisualization/statistiques",
+  //     icon: statistiquesicon,
+  //   },
+  //   { id: 8, text: "Reports", path: "/datavisualization/reports", icon: reportsicon },
+  //   { id: 9, text: "Team", path: "/datavisualization/team", icon: teamicon },
+  // ];
 
   return (
     <div
