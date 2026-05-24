@@ -6,6 +6,7 @@ import ProfileInfo from "./profileinfo";
 import axios from "axios";
 import { FiUser } from "react-icons/fi";
 import uploadimg from "@/public/images/uploadimg.svg";
+import { API_URL } from "@/lib/api";
 
 export default function ProfilePage({ show, setShow, handlelogout }) {
   const [user, setUser] = useState({});
@@ -29,7 +30,7 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
       }
       try {
         const response = await axios.get(
-          `http://localhost:4000/users/users/${userInfo.userId}`,
+          `${API_URL}/users/users/${userInfo.userId}`,
           {
             headers: {
               Authorization: `Bearer ${userInfo.token}`,
@@ -74,7 +75,7 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/upload/any",
+        `${API_URL}/upload/any`,
         formData,
         {
           headers: {
@@ -84,7 +85,7 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
       );
       const fileUrl = response.data.fileUrl;
       const responseuser = await axios.put(
-        `http://localhost:4000/users/users/${
+        `${API_URL}/users/users/${
           JSON.parse(localStorage.getItem("user")).userId
         }`,
         { profileImage: fileUrl },

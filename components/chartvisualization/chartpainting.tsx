@@ -37,13 +37,15 @@ interface ChartpaintingProps {
   data: ChartData[];
 }
 
+import { API_URL } from "@/lib/api";
+
 export default function Chartpainting() {
   const [paintingRobot, setpaintingRobot] = useState([]);
   useEffect(() => {
     
     const fetchStampingPress =  () => {
       // Connect to the SSE endpoint
-      const eventSource = new EventSource('http://localhost:4000/api/kpi/painting-robot-performance');
+      const eventSource = new EventSource(`${API_URL}/api/kpi/painting-robot-performance`);
       console.log("eventSource : ", eventSource);
       
 

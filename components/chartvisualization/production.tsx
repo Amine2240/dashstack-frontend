@@ -37,13 +37,15 @@ interface ProductionProps {
   data: ChartData[];
 }
 
+import { API_URL } from "@/lib/api";
+
 export default function Production() {
   const [production, setproduction] = useState([]);
   useEffect(() => {
     
     const fetchStampingPress =  () => {
       // Connect to the SSE endpoint
-      const eventSource = new EventSource('http://localhost:4000/api/kpi/production-yield-rate');
+      const eventSource = new EventSource(`${API_URL}/api/kpi/production-yield-rate`);
       console.log("eventSource : ", eventSource);
       
 

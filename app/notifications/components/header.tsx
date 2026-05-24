@@ -4,6 +4,8 @@ import axios from "axios";
 import trash from "@/public/images/trash.svg";
 import React from "react";
 
+import { API_URL } from "@/lib/api";
+
 interface HeaderProps {
   selectedNotifications: string[];
   notifications: { _id: string }[];
@@ -19,7 +21,7 @@ export default function Header({ selectedNotifications, notifications, setNotifi
       // Loop through selected notifications and send a DELETE request for each
       for (const notificationId of selectedNotifications) {
 
-        await axios.delete(`http://localhost:4000/notifications/${notificationId}`);
+        await axios.delete(`${API_URL}/notifications/${notificationId}`);
 
       }
 

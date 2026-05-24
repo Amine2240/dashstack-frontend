@@ -9,6 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import TablePagination from "@mui/material/TablePagination";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 import { Checkbox, Chip  } from "@mui/material";
 import CheckCircleOutline from "@mui/icons-material/CheckCircleOutline";
 const Page = () => {
@@ -23,7 +24,7 @@ const Page = () => {
       const token = JSON.parse(localStorage.getItem("user")).token;
       try {
         const response = await axios.get(
-          `http://localhost:4000/tasks/user/${userId}`,
+          `${API_URL}/tasks/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -62,7 +63,7 @@ const Page = () => {
     const updatedTask = { isDone: true, userId }; // Including userId in request body
 
     try {
-      await axios.put(`http://localhost:4000/tasks/${taskId}`, updatedTask, {
+      await axios.put(`${API_URL}/tasks/${taskId}`, updatedTask, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

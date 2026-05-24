@@ -5,6 +5,7 @@ import Link from "next/link";
 import axios from "axios";
 import ProfilePage from "./profile/profilePage";
 import anomay from '@/public/images/anomaly.svg';
+import { API_URL } from "@/lib/api";
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -42,7 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
       if (user?.userId && token) {
         try {
           const response = await axios.get(
-            `http://localhost:4000/users/users/${user.userId}`,
+            `${API_URL}/users/users/${user.userId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -73,7 +74,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
       if (user?.userId && token) {
         try {
           const response = await axios.get(
-            `http://localhost:4000/notifications/${user.userId}`,
+            `${API_URL}/notifications/${user.userId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,

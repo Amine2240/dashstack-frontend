@@ -37,13 +37,15 @@ interface MaintenanceProps {
   data: ChartData[];
 }
 
+import { API_URL } from "@/lib/api";
+
 export default function Maintenance() {
   const [maintenance, setmaintenance] = useState([]);
   useEffect(() => {
     
     const fetchStampingPress =  () => {
       // Connect to the SSE endpoint
-      const eventSource = new EventSource('http://localhost:4000/api/kpi/maintenance-cost-per-unit');
+      const eventSource = new EventSource(`${API_URL}/api/kpi/maintenance-cost-per-unit`);
       console.log("eventSource : ", eventSource);
       
 

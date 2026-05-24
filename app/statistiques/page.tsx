@@ -26,6 +26,8 @@ import {
 } from "chart.js";
 import "chart.js/auto";
 
+import { API_URL } from "@/lib/api";
+
 Chart.register(
   CategoryScale,
   LinearScale,
@@ -54,25 +56,25 @@ const HistoricalDataCharts = () => {
     const fetchData = async () => {
       try {
         const weldingRobot = await axios.get(
-          "http://localhost:4000/historical-data/welding-robot"
+          `${API_URL}/historical-data/welding-robot`
         );
         const stampingPress = await axios.get(
-          "http://localhost:4000/historical-data/stamping-press"
+          `${API_URL}/historical-data/stamping-press`
         );
         const paintingRobot = await axios.get(
-          "http://localhost:4000/historical-data/painting-robot"
+          `${API_URL}/historical-data/painting-robot`
         );
         const agv = await axios.get(
-          "http://localhost:4000/historical-data/agv"
+          `${API_URL}/historical-data/agv`
         );
         const cncMachine = await axios.get(
-          "http://localhost:4000/historical-data/cnc-machine"
+          `${API_URL}/historical-data/cnc-machine`
         );
         const leakTest = await axios.get(
-          "http://localhost:4000/historical-data/leak-test"
+          `${API_URL}/historical-data/leak-test`
         );
 
-        const energyResponse = await axios.get("http://localhost:4000/energy");
+        const energyResponse = await axios.get(`${API_URL}/energy`);
 
         setHistoricalData({
           weldingRobot: weldingRobot.data,

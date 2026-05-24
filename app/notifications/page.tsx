@@ -4,6 +4,8 @@ import Header from "./components/header";
 import Notify from "./components/notify";
 import { useState, useEffect } from "react";
 
+import { API_URL } from "@/lib/api";
+
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
@@ -18,7 +20,7 @@ export default function Notifications() {
     const fetchNotifications = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/notifications/${userId}`,
+          `${API_URL}/notifications/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

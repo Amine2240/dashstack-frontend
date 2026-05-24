@@ -37,13 +37,15 @@ interface AssemblyProps {
   data: ChartData[];
 }
 
+import { API_URL } from "@/lib/api";
+
 export default function Assembly() {
   const [assembly, setassembly] = useState([]);
   useEffect(() => {
     
     const fetchStampingPress =  () => {
       // Connect to the SSE endpoint
-      const eventSource = new EventSource('http://localhost:4000/api/kpi/assembly-line-speed');
+      const eventSource = new EventSource(`${API_URL}/api/kpi/assembly-line-speed`);
       console.log("eventSource : ", eventSource);
       
 

@@ -37,13 +37,15 @@ interface ChartStampProps {
   data: ChartData[];
 }
 
+import { API_URL } from "@/lib/api";
+
 export default function ChartStamp() {
   const [stampingPressEfficiency, setStampingPressEfficiency] = useState([]);
   useEffect(() => {
     
     const fetchStampingPress =  () => {
       // Connect to the SSE endpoint
-      const eventSource = new EventSource('http://localhost:4000/api/kpi/stamping-press-efficiency-stream');
+      const eventSource = new EventSource(`${API_URL}/api/kpi/stamping-press-efficiency-stream`);
       console.log("eventSource : ", eventSource);
       
 

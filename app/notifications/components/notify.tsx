@@ -2,6 +2,8 @@
 import axios from 'axios';
 import React, { useEffect } from 'react'
 
+import { API_URL } from '@/lib/api';
+
 interface NotifyProps {
     machineId: string;
     message: string;
@@ -23,7 +25,7 @@ export default function Notify({ machineId, message, title, updatedAt, isRead, i
             setShowText(!showText);
             if (!isRead) {
                 setRead(true);
-                await axios.put(`http://localhost:4000/notifications/${id}/read`);
+                await axios.put(`${API_URL}/notifications/${id}/read`);
             }
         } catch (err) {
             console.log(err);

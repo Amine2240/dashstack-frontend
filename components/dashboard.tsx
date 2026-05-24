@@ -19,6 +19,8 @@ import totaltasks from "@/public/images/totaltasks.svg";
 import totalwarnings from "@/public/images/totalwarnings.svg";
 import productioncount from "@/public/images/completedtasks.svg";
 
+import { API_URL } from "@/lib/api";
+
 interface Task {
   _id: string;
   taskTitle: string;
@@ -95,25 +97,25 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const tasksResponse = await axios.get<Task[]>(
-          "http://localhost:4000/tasks"
+          `${API_URL}/tasks`
         );
         const totalTasks = tasksResponse.data.length;
 
         const logsResponse = await axios.get<Log[]>(
-          "http://localhost:4000/logs"
+          `${API_URL}/logs`
         );
         const openWarnings = logsResponse.data.filter(
           (log: Log) => log.status === "warning" || log.status === "danger"
         ).length;
 
         const usersResponse = await axios.get<User[]>(
-          "http://localhost:4000/users/users"
+          `${API_URL}/users/users`
         );
         const totalUsers = usersResponse.data.length;
 
         // Fetch the product count from the backend
         const productCountResponse = await axios.get(
-          "http://localhost:4000/order-tracking/products/count"
+          `${API_URL}/order-tracking/products/count`
         );
 
         const productionCount = productCountResponse.data["totalProduced"];
@@ -121,7 +123,7 @@ const Page = () => {
         console.log(productionCount);
 
         const energyResponse = await axios.get(
-          "http://localhost:4000/ai/energy-summary"
+          `${API_URL}/ai/energy-summary`
         );
         const energyData = energyResponse.data.summary.summary;
 

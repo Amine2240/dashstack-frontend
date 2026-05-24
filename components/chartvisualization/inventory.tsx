@@ -37,13 +37,15 @@ interface InvetoryProps {
   data: ChartData[];
 }
 
+import { API_URL } from "@/lib/api";
+
 export default function Invetory() {
   const [inventory, setinventory] = useState([]);
   useEffect(() => {
     
     const fetchStampingPress =  () => {
       // Connect to the SSE endpoint
-      const eventSource = new EventSource('http://localhost:4000/api/kpi/inventory-turnover-rate');
+      const eventSource = new EventSource(`${API_URL}/api/kpi/inventory-turnover-rate`);
       console.log("eventSource : ", eventSource);
       
 

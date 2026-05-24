@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Header from "./components/header";
 import Notify from "./components/notify";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 
 export default function PageReports() {
     interface Report {
@@ -21,7 +22,7 @@ export default function PageReports() {
     useEffect(() => {
         const fetchReports = async () => {
             try {
-                const response = await axios.get("http://localhost:4000/logs");
+                const response = await axios.get(`${API_URL}/logs`);
                 setReports(response.data);
             } catch (err) {
                 console.log(err);

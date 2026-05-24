@@ -15,6 +15,8 @@ import axios from "axios";
 import remove from "@/public/images/remove.svg";
 import tasks from "@/public/images/tasks.svg";
 
+import { API_URL } from "@/lib/api";
+
 // Status color-coding helper function
 const getStatusStyle = (status: string) => {
   switch (status.toLowerCase()) {
@@ -38,7 +40,7 @@ export default function AdvancedTable() {
   const [users, setusers] = useState([]);
   const fetchusers = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/users/users");
+      const response = await axios.get(`${API_URL}/users/users`);
       console.log("helloww", response.data);
       setusers(response.data);
     } catch (error) {
@@ -53,7 +55,7 @@ export default function AdvancedTable() {
     const fetchuser = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/users/users/${userId}`
+          `${API_URL}/users/users/${userId}`
         );
         if (response.data.role.toLowerCase() === "manager") {
           setisManager(true);

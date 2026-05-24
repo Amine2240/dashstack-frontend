@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 import { log } from "console";
 
 const Chat = () => {
@@ -12,7 +13,7 @@ const Chat = () => {
 
   const startChat = async () => {
     try {
-      await axios.post("http://localhost:4000/chat/start");
+      await axios.post(`${API_URL}/chat/start`);
       setMessages([
         { id: 0, sender: "system", text: "Chat started successfully" },
       ]);
@@ -40,7 +41,7 @@ const Chat = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:4000/chat/message", {
+      const response = await axios.post(`${API_URL}/chat/message`, {
         message: newMsg.text,
       });
       console.log("response", response);

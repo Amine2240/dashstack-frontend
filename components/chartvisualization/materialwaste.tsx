@@ -37,13 +37,15 @@ interface MaterialwasteProps {
   data: ChartData[];
 }
 
+import { API_URL } from "@/lib/api";
+
 export default function Materialwaste() {
   const [materialwaste, setmaterialwaste] = useState([]);
   useEffect(() => {
     
     const fetchStampingPress =  () => {
       // Connect to the SSE endpoint
-      const eventSource = new EventSource('http://localhost:4000/api/kpi/material-waste-percentage');
+      const eventSource = new EventSource(`${API_URL}/api/kpi/material-waste-percentage`);
       console.log("eventSource : ", eventSource);
       
 

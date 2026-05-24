@@ -16,12 +16,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 
+import { API_URL } from "@/lib/api";
+
 const Page = () => {
   const [machine, setmachine] = useState([]);
   const fetchdata = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/logs/welding_robot_006"
+        `${API_URL}/logs/welding_robot_006`
       );
       setmachine(response.data);
       console.log("machine : ", response.data);

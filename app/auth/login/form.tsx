@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import { API_URL } from "@/lib/api";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAuth } from "../../context/auth";
@@ -31,7 +32,7 @@ export default function LoginForm() {
     setLoginError(""); // Reset login error on each submit
     try {
       const response = await axios.post(
-        "http://localhost:4000/auth/login",
+        `${API_URL}/auth/login`,
         data
       );
       const user = {

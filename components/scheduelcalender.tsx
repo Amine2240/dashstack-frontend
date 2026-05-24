@@ -7,6 +7,8 @@ import axios from "axios";
 import { AiOutlineCalendar } from "react-icons/ai";
 import { FaRobot, FaCogs, FaIndustry, FaWrench } from "react-icons/fa";
 
+import { API_URL } from "@/lib/api";
+
 const ScheduleCalendar = () => {
   const [scheduleData, setScheduleData] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
@@ -16,7 +18,7 @@ const ScheduleCalendar = () => {
     const fetchSchedule = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:4000/ai/generate-task-schedule"
+          `${API_URL}/ai/generate-task-schedule`
         );
         console.log("Chat response:", response.data);
         setScheduleData(response.data.schedule);

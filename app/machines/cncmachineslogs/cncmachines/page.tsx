@@ -3,13 +3,14 @@ import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import CNCDatachart from "@/components/charts/cncmachinescharts";
+import { API_URL } from "@/lib/api";
 
 const Page = () => {
   const [cncmachinedata, setcncmachinedata] = useState([]);
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/webhook-v1/cnc-machine"
+        `${API_URL}/webhook-v1/cnc-machine`
       );
       console.log("response : ", response.data);
       setcncmachinedata(response.data);

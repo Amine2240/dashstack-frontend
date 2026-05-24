@@ -37,13 +37,15 @@ interface OperatoreffProps {
   data: ChartData[];
 }
 
+import { API_URL } from "@/lib/api";
+
 export default function Operatoreff() {
   const [operatoreff, setoperatoreff] = useState([]);
   useEffect(() => {
     
     const fetchStampingPress =  () => {
       // Connect to the SSE endpoint
-      const eventSource = new EventSource('http://localhost:4000/api/kpi/operator-efficiency');
+      const eventSource = new EventSource(`${API_URL}/api/kpi/operator-efficiency`);
       console.log("eventSource : ", eventSource);
       
 

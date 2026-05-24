@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 // import Notify from "./components/notify";
 import axios from "axios";
 import Anomaly from "@/components/anomaly";
+import { API_URL } from "@/lib/api";
 
 export default function Pageanomalies() {
   interface Anomaly {
@@ -117,7 +118,7 @@ export default function Pageanomalies() {
   // useEffect(() => {
   //     const fetchanomalies = async () => {
   //         try {
-  //             const response = await axios.get("http://localhost:4000/logs");
+  //             const response = await axios.get(`${API_URL}/logs`);
   //             setanomalies(response.data);
   //         } catch (err) {
   //             console.log(err);

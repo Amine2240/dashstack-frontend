@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress"; // Import spinner
 import { messaging, getToken } from "@/firebase"; // Import Firebase config
 import axios from "axios"; // Axios to send the FCM token to the server
+import { API_URL } from "@/lib/api";
 
 const geistSans = localFont({
   src: "../public/fonts/GeistVF.woff",
@@ -57,7 +58,7 @@ export default function RootLayout({
 
             // Send the FCM token to the backend to store it for sending notifications
             await axios.put(
-              `http://localhost:4000/users/${userId}`,
+              `${API_URL}/users/${userId}`,
               { notificationsToken: currentToken },
               { headers: { Authorization: `Bearer ${token}` } }
             );

@@ -17,12 +17,14 @@ import axios from "axios";
 import Link from "next/link";
 import * as XLSX from "xlsx"; // For Excel export
 
+import { API_URL } from "@/lib/api";
+
 const Page = () => {
   const [machine, setMachine] = useState([]);
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/logs/painting_robot_002");
+      const response = await axios.get(`${API_URL}/logs/painting_robot_002`);
       setMachine(response.data);
     } catch (error) {
       console.error(error);
