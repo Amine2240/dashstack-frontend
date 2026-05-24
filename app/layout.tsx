@@ -95,10 +95,15 @@ export default function RootLayout({
     }
   }, []);
 
-  if (loading) {
-    // Display spinner while verifying login
-    return <div className="flex justify-center items-center h-screen"></div>;
-  }
+if (loading) {
+  return (
+    <html lang="en">
+      <body className="flex justify-center items-center h-screen">
+        {/* spinner or empty */}
+      </body>
+    </html>
+  );
+}
 
   return (
     <html lang="en">
