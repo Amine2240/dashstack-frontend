@@ -105,7 +105,7 @@ export default function LoginForm() {
             <input
               type="text"
               id="email"
-              placeholder="Enter your email"
+              placeholder="Enter your email (ex: younes@gmail.com)"
               className="border border-gray-300 rounded-lg px-5 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-gray-100 shadow-sm"
               {...register("email", { required: "Email is required" })}
             />
@@ -129,7 +129,7 @@ export default function LoginForm() {
             <input
               type="password"
               id="password"
-              placeholder="Enter your password"
+              placeholder="Enter your password (ex: younes123)"
               className="border border-gray-300 rounded-lg px-5 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-gray-100 shadow-sm"
               {...register("password", { required: "Password is required" })}
             />
