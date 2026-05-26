@@ -89,42 +89,34 @@ const Page = () => {
   });
 
   const [energySummary, setEnergySummary] = useState<EnergySummary | null>(
-    null
+    null,
   );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const tasksResponse = await axios.get<Task[]>(
-          `${API_URL}/tasks`
-        );
+        const tasksResponse = await axios.get<Task[]>(`${API_URL}/tasks`);
         const totalTasks = tasksResponse.data.length;
 
-        const logsResponse = await axios.get<Log[]>(
-          `${API_URL}/logs`
-        );
+        const logsResponse = await axios.get<Log[]>(`${API_URL}/logs`);
         const openWarnings = logsResponse.data.filter(
-          (log: Log) => log.status === "warning" || log.status === "danger"
+          (log: Log) => log.status === "warning" || log.status === "danger",
         ).length;
 
-        const usersResponse = await axios.get<User[]>(
-          `${API_URL}/users/users`
-        );
+        const usersResponse = await axios.get<User[]>(`${API_URL}/users/users`);
         const totalUsers = usersResponse.data.length;
 
         // Fetch the product count from the backend
         const productCountResponse = await axios.get(
-          `${API_URL}/order-tracking/products/count`
+          `${API_URL}/order-tracking/products/count`,
         );
 
         const productionCount = productCountResponse.data["totalProduced"];
 
         console.log(productionCount);
 
-        const energyResponse = await axios.get(
-          `${API_URL}/ai/energy-summary`
-        );
+        const energyResponse = await axios.get(`${API_URL}/ai/energy-summary`);
         const energyData = energyResponse.data.summary.summary;
 
         setDashboardData({
@@ -138,7 +130,7 @@ const Page = () => {
       } catch (error) {
         console.error(
           "Error fetching dashboard or energy summary data:",
-          error
+          error,
         );
         setLoading(false);
       }
@@ -150,7 +142,7 @@ const Page = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <CircularProgress />
+        <div className="skeleton h-12 w-12 rounded-full" />
       </div>
     );
   }
@@ -241,16 +233,13 @@ const Page = () => {
   const { shift_insights, overall_trends } = energySummary || {};
 
   return (
-    <div className="bg-[#F5F6FA] p-5">
+    <div className="content-shell p-5">
       <p className="text-3xl font-bold capitalize mb-10">Dashboard</p>
 
       {/* Dashboard Data Section */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 place-content-around">
         {myarray.map((item) => (
-          <div
-            key={item.id}
-            className="flex flex-col bg-white w-full  rounded-lg p-5 "
-          >
+          <div key={item.id} className="surface p-5">
             <div className="flex items-start place-content-between">
               <div className="flex flex-col">
                 <p className="capitalize text-xl font-semibold mr-3 text-[#202224]">
@@ -275,10 +264,7 @@ const Page = () => {
         <h2 className="text-2xl font-bold mb-4">Energy Summary</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {energySummary?.machine_insights.map((insight) => (
-            <div
-              key={insight.machine_id}
-              className="flex flex-col bg-white w-full h-auto rounded-lg p-6 "
-            >
+            <div key={insight.machine_id} className="surface p-6">
               <div className="flex items-center mb-3">
                 {getMachineIcon(insight.machine_id)}
                 <p className="capitalize text-xl font-semibold text-[#202224] ml-3">
@@ -304,7 +290,7 @@ const Page = () => {
         <section className="mt-10">
           <h2 className="text-2xl font-bold mb-4">Shift Insights</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="bg-white p-5 rounded-lg ">
+            <div className="surface p-5">
               <h3 className="text-lg font-semibold mb-2">
                 Most Energy Consumed Shift
               </h3>
@@ -313,7 +299,7 @@ const Page = () => {
                 <p>{shift_insights.most_energy_consumed_shift}</p>
               </div>
             </div>
-            <div className="bg-white p-5 rounded-lg ">
+            <div className="surface p-5">
               <h3 className="text-lg font-semibold mb-2">
                 Least Energy Consumed Shift
               </h3>
@@ -336,7 +322,7 @@ const Page = () => {
                     {data.average_energy_per_machine} kWh
                   </p>
                 </div>
-              )
+              ),
             )}
           </div>
         </section>
@@ -366,7 +352,7 @@ const Page = () => {
               </div>
             ))}
 
-            <div className="bg-white p-5 rounded-lg ">
+            <div className="surface p-5">
               <h3 className="text-lg font-semibold mb-2 text-green-500">
                 Optimization Suggestions
               </h3>
@@ -379,7 +365,7 @@ const Page = () => {
                     />
                     <p>{suggestion}</p>
                   </div>
-                )
+                ),
               )}
             </div>
           </div>

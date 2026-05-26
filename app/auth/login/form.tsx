@@ -31,10 +31,7 @@ export default function LoginForm() {
     setLoading(true);
     setLoginError(""); // Reset login error on each submit
     try {
-      const response = await axios.post(
-        `${API_URL}/auth/login`,
-        data
-      );
+      const response = await axios.post(`${API_URL}/auth/login`, data);
       const user = {
         token: response.data.accessToken.token,
         userId: response.data.userId,
@@ -49,7 +46,8 @@ export default function LoginForm() {
         window.location.reload();
       }, 1000);
       reset();
-    } catch (error: any) {
+    } catch (_error) {
+      console.error("Login error:", _error);
       setLoginError("An error occurred. Please try again.");
       toast.error("An error occurred. Please try again.", {
         position: "top-right",
@@ -64,30 +62,61 @@ export default function LoginForm() {
       <ToastContainer />
 
       {/* Left Section for Welcome Message */}
-      <div className="hidden lg:flex flex-col justify-center w-1/2 bg-gradient-to-r from-purple-600 to-blue-400 p-16 text-white">
-        <h1 className="text-6xl font-extrabold mb-4">Welcome To</h1>
-        <h2 className="text-5xl font-extrabold mb-4">
-          <span className="text-purple-200">Auto </span>Tracks
-        </h2>
-        <h3 className="text-4xl font-bold mb-6">Cars Factory</h3>
-        <p className="text-lg leading-relaxed">
-          Auto Tracks is the leading solution for automating and managing
-          industrial car manufacturing processes. Our platform ensures precise
-          control and monitoring of operations, maximizing efficiency and
-          productivity.
-        </p>
-        <p className="text-lg leading-relaxed mt-4">
-          From welding and stamping to painting and final assembly, Auto Tracks
-          helps manufacturers deliver top-quality vehicles while optimizing
-          resource consumption. Join us and drive your factory into the future
-          of automation.
-        </p>
+      <div
+        className="hidden lg:flex flex-col justify-center w-1/2 p-16 text-white relative overflow-hidden border-r border-white/5"
+        style={{
+          background: `
+            radial-gradient(circle at 15% 20%, rgba(93, 46, 234, 0.22) 0%, transparent 50%),
+            radial-gradient(circle at 85% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+            linear-gradient(135deg, #0a0e17 0%, #06090e 100%)
+          `,
+        }}
+      >
+        {/* Local decorative grid */}
+        <div
+          className="absolute inset-0 opacity-10 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+
+        {/* Local subtle floating orb */}
+        <div className="absolute top-1/4 -left-1/4 w-96 h-96 rounded-full bg-purple-600/10 blur-[80px] pointer-events-none" />
+        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 rounded-full bg-cyan-600/10 blur-[80px] pointer-events-none" />
+
+        <div className="relative z-10">
+          <h1 className="text-6xl font-extrabold mb-4 tracking-tight leading-tight">
+            Welcome To
+          </h1>
+          <h2 className="text-5xl font-extrabold mb-4 tracking-tight">
+            <span className="text-cyan-400">Auto</span>
+            <span className="text-purple-400">Tracks</span>
+          </h2>
+          <h3 className="text-3xl font-bold mb-6 text-white/80">
+            Cars Factory
+          </h3>
+
+          <p className="text-lg leading-relaxed text-white/70">
+            AutoTracks is the leading solution for automating and managing
+            industrial car manufacturing processes. Our platform ensures precise
+            control and monitoring of operations, maximizing efficiency and
+            productivity.
+          </p>
+          <p className="text-lg leading-relaxed text-white/70 mt-4">
+            From welding and stamping to painting and final assembly, AutoTracks
+            helps manufacturers deliver top-quality vehicles while optimizing
+            resource consumption. Join us and drive your factory into the future
+            of automation.
+          </p>
+        </div>
       </div>
 
       {/* Right Section for Login Form */}
       <div className="flex items-center justify-center w-full lg:w-1/2 p-16">
         <form
-          className="flex flex-col gap-6 bg-white rounded-2xl shadow-2xl px-16 py-12 w-full max-w-lg"
+          className="surface flex flex-col gap-6 px-10 py-8 w-full max-w-lg"
           onSubmit={handleSubmit(onSubmit)}
         >
           <h1 className="text-5xl font-bold text-center text-gray-800">
@@ -106,7 +135,7 @@ export default function LoginForm() {
               type="text"
               id="email"
               placeholder="Email (ex: younes@gmail.com)"
-              className="border border-gray-300 rounded-lg px-5 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-gray-100 shadow-sm"
+              className="input"
               {...register("email", { required: "Email is required" })}
             />
             {errors.email && (
@@ -130,7 +159,7 @@ export default function LoginForm() {
               type="password"
               id="password"
               placeholder="Password (ex: younes123)"
-              className="border border-gray-300 rounded-lg px-5 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-gray-100 shadow-sm"
+              className="input"
               {...register("password", { required: "Password is required" })}
             />
             {errors.password && (
@@ -155,9 +184,7 @@ export default function LoginForm() {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`bg-purple-700 text-white font-semibold rounded-lg py-4 mt-4 w-full text-lg transition duration-300 hover:bg-purple-800 ${
-              loading && "cursor-not-allowed"
-            }`}
+            className={`btn btn-primary w-full ${loading ? "cursor-not-allowed" : ""}`}
             disabled={loading}
           >
             {loading ? "Logging in..." : "Login"}

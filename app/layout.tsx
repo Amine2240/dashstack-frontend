@@ -1,13 +1,13 @@
 "use client";
 
 import localFont from "next/font/local";
+import { usePathname } from "next/navigation";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import Sidebar from "@/components/sidebar";
 import { AuthProvider } from "./context/auth";
 import LoginPage from "./auth/login/page";
 import { useEffect, useState } from "react";
-import CircularProgress from "@mui/material/CircularProgress"; // Import spinner
 import { messaging, getToken } from "@/firebase"; // Import Firebase config
 import axios from "axios"; // Axios to send the FCM token to the server
 import { API_URL } from "@/lib/api";
@@ -32,6 +32,8 @@ export default function RootLayout({
   const [user, setUser] = useState(false);
   const [loading, setLoading] = useState(true); // Loading state for verification
   const [isSidebarOpen, setSidebarOpen] = useState(false); // Sidebar open state
+  const pathname = usePathname();
+  const isPublicRoute = pathname === "/" || pathname?.startsWith("/auth");
 
   useEffect(() => {
     const token = localStorage.getItem("user");
@@ -44,28 +46,35 @@ export default function RootLayout({
   // FCM token retrieval and service worker registration
   useEffect(() => {
     if (typeof window !== "undefined" && messaging) {
+      const activeMessaging = messaging;
       const getAndSendFCMToken = async () => {
         try {
           // Request permission from the user to show notifications
-          const currentToken = await getToken(messaging, {
+          const currentToken = await getToken(activeMessaging, {
             vapidKey:
               "BM7sWd8vOAWim376TRmAlK1HyrHX5C93jjUL_W-ptI3jMcz0FkItNroYU5BHxh-r-IqN9XLyIh8Kqe_RAu98QyA",
           });
 
           if (currentToken) {
-            const userId = JSON.parse(localStorage.getItem("user")).userId;
-            const token = JSON.parse(localStorage.getItem("user")).token;
+            const storedUser = localStorage.getItem("user");
+            if (!storedUser) {
+              return;
+            }
+
+            const parsedUser = JSON.parse(storedUser);
+            const userId = parsedUser.userId;
+            const token = parsedUser.token;
 
             // Send the FCM token to the backend to store it for sending notifications
             await axios.put(
               `${API_URL}/users/${userId}`,
               { notificationsToken: currentToken },
-              { headers: { Authorization: `Bearer ${token}` } }
+              { headers: { Authorization: `Bearer ${token}` } },
             );
             console.log("FCM Token successfully sent to server");
           } else {
             console.log(
-              "No FCM token available. Request permission to generate one."
+              "No FCM token available. Request permission to generate one.",
             );
           }
         } catch (err) {
@@ -85,7 +94,7 @@ export default function RootLayout({
           .then((registration) => {
             console.log(
               "Service Worker registered with scope:",
-              registration.scope
+              registration.scope,
             );
           })
           .catch((err) => {
@@ -95,32 +104,42 @@ export default function RootLayout({
     }
   }, []);
 
-if (loading) {
-  return (
-    <html lang="en">
-      <body className="flex justify-center items-center h-screen">
-        {/* spinner or empty */}
-      </body>
-    </html>
-  );
-}
+  if (loading) {
+    return (
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} bg-[#07111f] text-white`}
+        >
+          <div className="flex min-h-screen items-center justify-center">
+            <div className="h-4 w-4 animate-pulse rounded-full bg-cyan-400" />
+          </div>
+        </body>
+      </html>
+    );
+  }
 
   return (
     <html lang="en">
-      <body className="h-screen flex flex-col">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased`}
+      >
         <AuthProvider>
-          {user ? (
+          {isPublicRoute ? (
+            children
+          ) : user ? (
             <>
               <Navbar toggleSidebar={toggleSidebar} />
 
-              <div className="flex flex-1 overflow-hidden">
+              <div className="flex min-h-[calc(100vh-4.5rem)] flex-1 overflow-hidden">
                 <Sidebar
                   isSidebarOpen={isSidebarOpen}
                   toggleSidebar={toggleSidebar}
                 />
 
                 {/* Main Content Area */}
-                <main className="flex-1 p-5 overflow-auto">{children}</main>
+                <main className="content-shell flex-1 overflow-auto p-5">
+                  {children}
+                </main>
               </div>
             </>
           ) : (

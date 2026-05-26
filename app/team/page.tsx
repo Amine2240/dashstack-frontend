@@ -17,6 +17,24 @@ import tasks from "@/public/images/tasks.svg";
 
 import { API_URL } from "@/lib/api";
 
+const getAvatarFallback = (name?: string) => {
+  const initials = (name || "User")
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const accentIndex = (name?.length || 0) % 3;
+  const accents = [
+    "from-cyan-400 to-blue-600",
+    "from-amber-300 to-orange-500",
+    "from-emerald-400 to-teal-600",
+  ];
+
+  return { initials, accent: accents[accentIndex] };
+};
+
 // Status color-coding helper function
 const getStatusStyle = (status: string) => {
   switch (status.toLowerCase()) {
@@ -54,9 +72,7 @@ export default function AdvancedTable() {
     const userId = JSON.parse(localStorage.getItem("user")).userId;
     const fetchuser = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}/users/users/${userId}`
-        );
+        const response = await axios.get(`${API_URL}/users/users/${userId}`);
         if (response.data.role.toLowerCase() === "manager") {
           setisManager(true);
         } else {
@@ -70,7 +86,7 @@ export default function AdvancedTable() {
   }, []);
 
   return (
-    <TableContainer component={Paper} className="p-6 shadow-lg">
+    <TableContainer component={Paper} className="surface p-6">
       <Table sx={{ minWidth: 650 }} aria-label="machine-table">
         <TableHead className="bg-gray-100">
           <TableRow>
@@ -92,13 +108,21 @@ export default function AdvancedTable() {
               {/* Machine name with icon */}
               <TableCell component="th" scope="row">
                 <div className="flex items-center">
-                  <Image
-                    src={row.profileImage}
-                    alt={"ff"}
-                    width={40}
-                    height={40}
-                    className="mr-4"
-                  />
+                  {row.profileImage ? (
+                    <Image
+                      src={row.profileImage}
+                      alt={row.name}
+                      width={40}
+                      height={40}
+                      className="mr-4 h-10 w-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className={`mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br text-xs font-semibold text-slate-950 ${getAvatarFallback(row.name).accent}`}
+                    >
+                      {getAvatarFallback(row.name).initials}
+                    </div>
+                  )}
 
                   <p className="font-semibold">{row.name}</p>
                 </div>
@@ -117,7 +141,7 @@ export default function AdvancedTable() {
 
               <TableCell align="center">
                 <div className=" flex">
-                  <Link href='/assignedtasks' className=" text-blue-500 flex">
+                  <Link href="/assignedtasks" className=" text-blue-500 flex">
                     tasks
                     <Image src={tasks} alt="" />
                   </Link>

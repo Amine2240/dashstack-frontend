@@ -1,43 +1,59 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { FiMenu, FiBell, FiUser, FiLogOut } from "react-icons/fi"; // Icons for the menu, bell, user, and logout
+import { FiMenu, FiBell, FiLogOut } from "react-icons/fi";
 import Link from "next/link";
 import axios from "axios";
 import ProfilePage from "./profile/profilePage";
-import anomay from '@/public/images/anomaly.svg';
+import anomay from "@/public/images/anomaly.svg";
 import { API_URL } from "@/lib/api";
 
 interface NavbarProps {
   toggleSidebar: () => void;
 }
 
+type NavbarUser = {
+  userId: string;
+  name: string;
+  profileImage: string | null;
+  role?: string;
+};
+
+const getAvatarFallback = (name?: string) => {
+  const initials = (name || "User")
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  return {
+    initials,
+    className:
+      "bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-600 text-slate-950",
+  };
+};
+
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const [notificationCount, setNotificationCount] = useState(0);
-  const [userId, setUserId] = useState(null);
   const [show, setShow] = useState(false);
-  const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<NavbarUser | null>(null);
 
-  // Fetch token and userId from localStorage
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser) {
-      setToken(storedUser.token);
-
-      setUser({
-        userId: storedUser.userId,
-        name: "Loading...",
-        profileImage: null,
-      }); // Initial state for profile
-      setUser({
-        userId: storedUser.userId,
-        name: "Loading...",
-        profileImage: null,
-      }); // Initial state for profile
+    const storedUserRaw = localStorage.getItem("user");
+    if (!storedUserRaw) {
+      return;
     }
+
+    const storedUser = JSON.parse(storedUserRaw);
+    setToken(storedUser.token);
+    setUser({
+      userId: storedUser.userId,
+      name: "Loading...",
+      profileImage: null,
+    });
   }, []);
 
-  // Fetch user profile data
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (user?.userId && token) {
@@ -48,27 +64,30 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
-            }
+            },
           );
-          setUser((prevUser) => ({
-            ...prevUser,
-            name: response.data.name,
-            profileImage: response.data.profileImage || null, // Use a default image if none available
-            role: response.data.role || "",
-          }));
-          console.log("rrrrrrrrrrrr : ", user);
+
+          setUser((prevUser) => {
+            if (!prevUser) {
+              return prevUser;
+            }
+
+            return {
+              ...prevUser,
+              name: response.data.name,
+              profileImage: response.data.profileImage || null,
+              role: response.data.role || "",
+            };
+          });
         } catch (error) {
           console.error("Error fetching user profile:", error);
         }
       }
     };
 
-    if (user?.userId) {
-      fetchUserProfile();
-    }
+    fetchUserProfile();
   }, [user?.userId, token]);
 
-  // Fetch notifications count from the server
   useEffect(() => {
     const fetchNotifications = async () => {
       if (user?.userId && token) {
@@ -79,11 +98,9 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
-            }
+            },
           );
           const count = response.data.length;
-
-          // If notifications are more than 20, set it to "+20"
           setNotificationCount(count > 20 ? 20 : count);
         } catch (error) {
           console.error("Error fetching notifications:", error);
@@ -94,78 +111,93 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     fetchNotifications();
   }, [user?.userId, token]);
 
-  // Function to handle logout
   const handleLogout = () => {
     localStorage.removeItem("user");
-    window.location.href = "/login"; // Redirect to login page after logout
+    window.location.href = "/auth/login";
   };
 
+  const avatar = getAvatarFallback(user?.name);
+
   return (
-    <nav className="flex justify-between lg:pl-19 items-center p-5 bg-white relative z-10">
-      <div className="flex items-center">
-        {/* Hamburger Menu for mobile view */}
-        <button className="lg:hidden mr-4" onClick={toggleSidebar}>
-          <FiMenu size={24} />
+    <nav className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-200/80 bg-white/85 px-5 py-4 backdrop-blur-xl shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
+      <div className="flex items-center gap-4">
+        <button
+          className="rounded-full border border-slate-200 bg-white p-2 text-slate-700 shadow-sm transition hover:border-cyan-300 hover:text-cyan-600 lg:hidden"
+          onClick={toggleSidebar}
+          aria-label="Open navigation"
+        >
+          <FiMenu size={20} />
         </button>
-        <Link href="/">
-          <label htmlFor="" className="text-3xl font-bold cursor-pointer">
-            <p>
-              <span className="text-purple-500">Auto</span>Track
+        <Link href="/" className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-600" />
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-slate-400">
+              AutoTrack
             </p>
-          </label>
+            <p className="text-lg font-semibold tracking-tight text-slate-950">
+              Command Center
+            </p>
+          </div>
         </Link>
       </div>
 
-      <div className="flex items-center space-x-5">
-        {/* Notifications */}
-        <div className="relative flex">
+      <div className="flex items-center gap-3 sm:gap-4">
+        <div className="relative flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-slate-600">
           {notificationCount > 0 && (
-            <p className="bg-red-500 rounded-full text-center text-sm text-white absolute -right-2 top-0 z-10 px-2">
+            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-[11px] font-semibold text-white">
               {notificationCount === 20 ? "+20" : notificationCount}
-            </p>
+            </span>
           )}
-          <Link href={"/notifications"}>
-            <FiBell size={30} className="text-gray-700" />
+          <Link
+            href="/notifications"
+            className="transition hover:text-slate-950"
+          >
+            <FiBell size={20} />
           </Link>
-          <Link href={"/anomalies"}>
-            <Image
-            src={anomay}
-            alt="icon"
-            />
+          <Link href="/anomalies" className="transition hover:opacity-90">
+            <Image src={anomay} alt="Anomalies" width={22} height={22} />
           </Link>
         </div>
-        <div
-          className="flex items-center cursor-pointer"
+
+        <button
+          className="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-2 py-2 pr-4 text-left shadow-sm transition hover:border-cyan-200 hover:shadow-md"
           onClick={() => setShow(true)}
+          aria-label="Open profile"
         >
-          <div className="bg-gray-300 rounded-full overflow-hidden h-[50px] w-[50px] flex items-center justify-center mr-3">
+          <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/10 text-sm font-semibold text-white shadow-[0_14px_32px_rgba(15,23,42,0.12)]">
             {user?.profileImage ? (
               <Image
                 src={user.profileImage}
                 alt="User Profile"
-                width={50}
-                height={50}
-                className="rounded-full"
+                width={44}
+                height={44}
+                className="h-full w-full rounded-full object-cover"
               />
             ) : (
-              <FiUser size={30} className="text-white" />
+              <span
+                className={`flex h-full w-full items-center justify-center rounded-full ${avatar.className}`}
+              >
+                {avatar.initials}
+              </span>
             )}
           </div>
           <div className="hidden sm:block">
-            <p className="font-semibold">{user?.name || "User Name"}</p>
-            <p>{user?.role} </p>
+            <p className="font-semibold text-slate-900">
+              {user?.name || "User Name"}
+            </p>
+            <p className="text-sm text-slate-500">{user?.role || "Member"}</p>
           </div>
-        </div>
+        </button>
 
-        {/* Sign Out */}
         <button
           onClick={handleLogout}
-          className="flex items-center text-red-500 hover:text-red-600"
+          className="flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-600 transition hover:bg-rose-100 hover:text-rose-700"
         >
-          <FiLogOut size={24} className="mr-1" />
-          <span>Logout</span>
+          <FiLogOut size={18} />
+          <span className="hidden sm:inline">Logout</span>
         </button>
       </div>
+
       <ProfilePage show={show} setShow={setShow} handlelogout={handleLogout} />
     </nav>
   );

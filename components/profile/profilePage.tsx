@@ -2,11 +2,28 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import logout from "@/public/images/logouticon.svg";
+import uploadimg from "@/public/images/uploadimg.svg";
 import ProfileInfo from "./profileinfo";
 import axios from "axios";
-import { FiUser } from "react-icons/fi";
-import uploadimg from "@/public/images/uploadimg.svg";
 import { API_URL } from "@/lib/api";
+
+const getAvatarFallback = (name?: string) => {
+  const initials = (name || "User")
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const palette = [
+    "from-cyan-400 to-blue-600",
+    "from-emerald-400 to-teal-600",
+    "from-amber-300 to-orange-500",
+  ];
+  const selected = palette[(name?.length || 0) % palette.length];
+
+  return { initials, selected };
+};
 
 export default function ProfilePage({ show, setShow, handlelogout }) {
   const [user, setUser] = useState({});
@@ -35,7 +52,7 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
             headers: {
               Authorization: `Bearer ${userInfo.token}`,
             },
-          }
+          },
         );
         setUser(response.data);
       } catch (err) {
@@ -74,15 +91,11 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
     setUploading(true);
 
     try {
-      const response = await axios.post(
-        `${API_URL}/upload/any`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(`${API_URL}/upload/any`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       const fileUrl = response.data.fileUrl;
       const responseuser = await axios.put(
         `${API_URL}/users/users/${
@@ -95,7 +108,7 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
               JSON.parse(localStorage.getItem("user")).token
             }`,
           },
-        }
+        },
       );
       setUploadedImageUrl(fileUrl); // Store the uploaded image URL
       setUser((prevUser) => ({ ...prevUser, profileImage: fileUrl }));
@@ -120,7 +133,7 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
   }
   return (
     <section
-      className={`fixed z-50 right-0 top-0 h-full bg-white w-[350px] flex flex-col justify-evenly ${
+      className={`fixed z-50 right-0 top-0 h-full w-[350px] flex flex-col justify-evenly surface ${
         show ? "block" : "hidden"
       }`}
     >
@@ -151,16 +164,18 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
               className="rounded-full size-52 object-cover "
             />
           ) : (
-            <FiUser
-              size={70}
-              className="text-white bg-gray-400 rounded-full p-2"
-            />
+            <div
+              className={`flex size-52 items-center justify-center rounded-full bg-gradient-to-br text-4xl font-semibold text-slate-950 ${getAvatarFallback(user.name).selected}`}
+            >
+              {getAvatarFallback(user.name).initials}
+            </div>
           )}
           <input
             type="file"
             name="uploadbtn"
             id="fileInput"
-            style={{ display: "none" }}
+            className="sr-only"
+            aria-label="Upload profile image"
             onChange={handleImageChange}
           />
           <button
@@ -189,7 +204,6 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
         >
           {user.role}
         </div>
-        '
       </div>
 
       <ProfileInfo
