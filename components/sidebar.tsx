@@ -62,9 +62,9 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }: SidebarProps) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 z-50 h-full w-72 flex flex-col overflow-y-auto border-r border-slate-200/80 bg-slate-950/95 shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl transition-transform duration-200 transform ${
+      className={`fixed top-0 left-0 z-30 h-full w-72 flex flex-col overflow-y-auto border-r border-slate-200/80 bg-slate-950/95 shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl transition-transform duration-200 transform ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 lg:sticky lg:top-[4.5rem] lg:h-[calc(100vh-4.5rem)]`}
+      } lg:translate-x-0 lg:fixed lg:top-[4.5rem] lg:h-[calc(100vh-4.5rem)]`}
     >
       <div className="flex items-center justify-between border-b border-white/10 px-5 py-5">
         <div>

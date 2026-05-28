@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Image from "next/image";
-import CircularProgress from "@mui/material/CircularProgress";
 import {
   FaRobot,
   FaCogs,
@@ -141,8 +140,51 @@ const Page = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="skeleton h-12 w-12 rounded-full" />
+      <div className="content-shell min-h-screen p-5">
+        <div className="mb-10 flex items-center justify-between">
+          <div className="space-y-3">
+            <div className="skeleton h-4 w-24" />
+            <div className="skeleton h-8 w-56" />
+          </div>
+          <div className="skeleton h-10 w-32 rounded-full" />
+        </div>
+
+        <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="surface p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 space-y-3">
+                  <div className="skeleton h-4 w-32" />
+                  <div className="skeleton h-10 w-20" />
+                </div>
+                <div className="skeleton h-12 w-12 rounded-2xl" />
+              </div>
+              <div className="mt-6 space-y-2">
+                <div className="skeleton h-3 w-full" />
+                <div className="skeleton h-3 w-5/6" />
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <section className="mt-10 grid gap-6 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="surface p-6">
+              <div className="flex items-center gap-3">
+                <div className="skeleton h-10 w-10 rounded-full" />
+                <div className="space-y-2">
+                  <div className="skeleton h-4 w-40" />
+                  <div className="skeleton h-3 w-24" />
+                </div>
+              </div>
+              <div className="mt-5 space-y-3">
+                <div className="skeleton h-3 w-full" />
+                <div className="skeleton h-3 w-11/12" />
+                <div className="skeleton h-3 w-4/5" />
+              </div>
+            </div>
+          ))}
+        </section>
       </div>
     );
   }

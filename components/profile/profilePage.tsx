@@ -7,6 +7,20 @@ import ProfileInfo from "./profileinfo";
 import axios from "axios";
 import { API_URL } from "@/lib/api";
 
+type ProfileUser = {
+  name: string;
+  email: string;
+  phoneNumber?: string;
+  role?: string;
+  profileImage?: string | null;
+};
+
+type ProfilePageProps = {
+  show: boolean;
+  setShow: (value: boolean) => void;
+  handlelogout: () => void;
+};
+
 const getAvatarFallback = (name?: string) => {
   const initials = (name || "User")
     .split(" ")
@@ -25,21 +39,23 @@ const getAvatarFallback = (name?: string) => {
   return { initials, selected };
 };
 
-export default function ProfilePage({ show, setShow, handlelogout }) {
-  const [user, setUser] = useState({});
-
-  const [error, setError] = useState(null);
+export default function ProfilePage({
+  show,
+  setShow,
+  handlelogout,
+}: ProfilePageProps) {
+  const [user, setUser] = useState<ProfileUser | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
 
   // Fetch user info from localStorage and API
   useEffect(() => {
     const fetchUser = async () => {
-      const userInfo = JSON.parse(localStorage.getItem("user"));
+      const storedUser = localStorage.getItem("user");
+      const userInfo = storedUser ? JSON.parse(storedUser) : null;
       if (!userInfo) {
         setError("User not found in localStorage.");
         setLoading(false);
@@ -66,9 +82,6 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
   }, []);
 
   // Handle file selection
-  const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
-  };
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -81,7 +94,6 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
   // Handle file upload
   const handleUpload = async () => {
     if (!selectedFile) {
-      setMessage("Please select a file first.");
       return;
     }
 
@@ -97,131 +109,272 @@ export default function ProfilePage({ show, setShow, handlelogout }) {
         },
       });
       const fileUrl = response.data.fileUrl;
-      const responseuser = await axios.put(
-        `${API_URL}/users/users/${
-          JSON.parse(localStorage.getItem("user")).userId
-        }`,
+      const storedUser = localStorage.getItem("user");
+      const userInfo = storedUser ? JSON.parse(storedUser) : null;
+
+      await axios.put(
+        `${API_URL}/users/users/${userInfo?.userId}`,
         { profileImage: fileUrl },
         {
           headers: {
-            Authorization: `Bearer ${
-              JSON.parse(localStorage.getItem("user")).token
-            }`,
+            Authorization: `Bearer ${userInfo?.token}`,
           },
         },
       );
-      setUploadedImageUrl(fileUrl); // Store the uploaded image URL
-      setUser((prevUser) => ({ ...prevUser, profileImage: fileUrl }));
+      setUploadedImageUrl(fileUrl);
+      setUser((prevUser) =>
+        prevUser ? { ...prevUser, profileImage: fileUrl } : prevUser,
+      );
       console.log("File uploaded successfully:", fileUrl);
-
-      setMessage(`File uploaded successfully: ${response.data.fileUrl}`);
     } catch (error) {
       console.error("Error uploading file:", error);
-      setMessage("Failed to upload file. Please try again.");
     } finally {
       setUploading(false);
     }
   };
 
-  // Conditional rendering
+  // Loading state
   if (loading) {
-    return <h1>Loading...</h1>;
-  }
-
-  if (error) {
-    return <h1>{error}</h1>;
-  }
-  return (
-    <section
-      className={`fixed z-50 right-0 top-0 h-full w-[350px] flex flex-col justify-evenly surface ${
-        show ? "block" : "hidden"
-      }`}
-    >
-      <div className="w-full flex justify-start p-4">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="hover:cursor-pointer"
-          onClick={() => setShow(false)}
-        >
-          <path
-            d="M2.66732 23.6667L0.333984 21.3333L9.66732 12L0.333984 2.66668L2.66732 0.333344L12.0007 9.66668L21.334 0.333344L23.6673 2.66668L14.334 12L23.6673 21.3333L21.334 23.6667L12.0007 14.3333L2.66732 23.6667Z"
-            fill="#333333"
-          />
-        </svg>
-      </div>
-      <div className="flex flex-col justify-center items-center gap-2">
-        <div className=" relative">
-          {user.profileImage || uploadedImageUrl ? (
-            <Image
-              src={user.profileImage || uploadedImageUrl} // just refresh after selecting the img
-              alt="profile"
-              width={100}
-              height={100}
-              className="rounded-full size-52 object-cover "
-            />
-          ) : (
-            <div
-              className={`flex size-52 items-center justify-center rounded-full bg-gradient-to-br text-4xl font-semibold text-slate-950 ${getAvatarFallback(user.name).selected}`}
-            >
-              {getAvatarFallback(user.name).initials}
-            </div>
-          )}
-          <input
-            type="file"
-            name="uploadbtn"
-            id="fileInput"
-            className="sr-only"
-            aria-label="Upload profile image"
-            onChange={handleImageChange}
-          />
+    return (
+      <>
+        <div className={`fixed inset-0 z-40 ${show ? "block" : "hidden"}`}>
           <button
-            onClick={() => {
-              // handleUpload();
-              document.getElementById("fileInput")?.click();
-            }}
             type="button"
-            // onClick={handleUpload}
-            // disabled={uploadimg}
-            className=" absolute right-0 bottom-0 z-[90] cursor-pointer"
-          >
-            <Image src={uploadimg} alt="upload" className=" z-[90]" />
-          </button>
-          <button onClick={handleUpload} type="button" disabled={uploading}>
-            Upload
-          </button>
+            aria-label="Close profile drawer"
+            className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]"
+            onClick={() => setShow(false)}
+          />
         </div>
-        <h1 className="text-2xl font-bold uppercase">{user.name}</h1>
-        <div
-          className={`font-semibold text-xl px-4 py-1 rounded-xl border-[1px] ${
-            user.role === "manager"
-              ? "border-[#BE7F44] bg-[#F7DFC8] text-[#BE7F44]"
-              : "border-[#3E50BC] text-[#3E50BC] bg-[#E3E6FA]"
-          }  text-center uppercase`}
+        <aside
+          className={`fixed right-0 top-0 z-50 flex h-screen w-[430px] flex-col overflow-hidden border-l border-white/10 bg-slate-950 text-white shadow-[0_30px_100px_rgba(15,23,42,0.35)] ${show ? "block" : "hidden"}`}
         >
-          {user.role}
+          <div className="border-b border-white/10 px-6 py-5">
+            <div className="skeleton h-4 w-20 rounded-full bg-white/10" />
+            <div className="mt-4 space-y-3">
+              <div className="skeleton h-8 w-44 rounded-xl bg-white/10" />
+              <div className="skeleton h-4 w-64 rounded-full bg-white/10" />
+            </div>
+          </div>
+          <div className="flex flex-1 flex-col gap-6 px-6 py-6">
+            <div className="flex justify-center">
+              <div className="skeleton size-44 rounded-full bg-white/10" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="skeleton h-20 rounded-2xl bg-white/10" />
+              <div className="skeleton h-20 rounded-2xl bg-white/10" />
+            </div>
+            <div className="space-y-3">
+              <div className="skeleton h-4 w-full rounded-full bg-white/10" />
+              <div className="skeleton h-4 w-5/6 rounded-full bg-white/10" />
+              <div className="skeleton h-4 w-4/5 rounded-full bg-white/10" />
+            </div>
+          </div>
+        </aside>
+      </>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <>
+        <div className={`fixed inset-0 z-40 ${show ? "block" : "hidden"}`}>
+          <button
+            type="button"
+            aria-label="Close profile drawer"
+            className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]"
+            onClick={() => setShow(false)}
+          />
         </div>
-      </div>
+        <aside
+          className={`fixed right-0 top-0 z-50 flex h-screen w-[430px] flex-col overflow-hidden border-l border-slate-200/80 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.20)] ${show ? "block" : "hidden"}`}
+        >
+          <div className="border-b border-slate-200/80 bg-gradient-to-r from-slate-950 via-slate-900 to-cyan-700 px-6 py-5 text-white">
+            <p className="text-xs uppercase tracking-[0.28em] text-cyan-200">
+              Profile unavailable
+            </p>
+            <h1 className="mt-3 text-2xl font-semibold">
+              Could not load profile
+            </h1>
+            <p className="mt-2 text-sm text-white/75">{error}</p>
+          </div>
+          <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+            <div className="rounded-full bg-rose-50 p-5 text-rose-500 shadow-sm">
+              <svg
+                width="34"
+                height="34"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 9v4"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M12 17h.01"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                />
+              </svg>
+            </div>
+            <p className="mt-6 text-sm uppercase tracking-[0.28em] text-slate-400">
+              We hit a loading issue
+            </p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="btn btn-primary mt-6"
+            >
+              Retry
+            </button>
+          </div>
+        </aside>
+      </>
+    );
+  }
 
-      <ProfileInfo
-        email={user.email}
-        phone={user.phoneNumber}
-        name={user.name}
-        role={user.role}
-      />
-
-      <div className="flex justify-center">
+  // Success state
+  return (
+    <>
+      <div className={`fixed inset-0 z-40 ${show ? "block" : "hidden"}`}>
         <button
-          onClick={handlelogout}
-          className="flex items-center gap-4 font-bold "
-        >
-          <p>Log Out</p>
-          <Image src={logout} alt="logout" width={20} height={20} />
-        </button>
+          type="button"
+          aria-label="Close profile drawer"
+          className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]"
+          onClick={() => setShow(false)}
+        />
       </div>
-    </section>
+      <aside
+        className={`fixed right-0 top-0 z-50 flex h-screen w-[430px] flex-col overflow-hidden border-l border-slate-200/80 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.2)] ${show ? "block" : "hidden"}`}
+      >
+        <div className="relative overflow-hidden border-b border-slate-200/80 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-700 px-6 py-6 text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.24),transparent_30%)]" />
+          <div className="relative flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.28em] text-cyan-200/90">
+                Profile
+              </p>
+              <h1 className="mt-3 text-2xl font-semibold tracking-tight">
+                {user?.name || "User Name"}
+              </h1>
+              <p className="mt-2 text-sm text-white/75">
+                {user?.role || "Member"} workspace access
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShow(false)}
+              className="rounded-full border border-white/15 bg-white/10 p-2 text-white/90 transition hover:bg-white/15"
+              aria-label="Close profile drawer"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M18 6 6 18"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="m6 6 12 12"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-6">
+          <div className="rounded-3xl border border-slate-200/80 bg-slate-50 p-5 shadow-sm">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                {user?.profileImage || uploadedImageUrl ? (
+                  <Image
+                    src={user?.profileImage || uploadedImageUrl}
+                    alt="profile"
+                    width={112}
+                    height={112}
+                    className="size-28 rounded-full object-cover ring-4 ring-white"
+                  />
+                ) : (
+                  <div
+                    className={`flex size-28 items-center justify-center rounded-full bg-gradient-to-br text-3xl font-semibold text-slate-950 ring-4 ring-white ${getAvatarFallback(user?.name).selected}`}
+                  >
+                    {getAvatarFallback(user?.name).initials}
+                  </div>
+                )}
+
+                <input
+                  type="file"
+                  name="uploadbtn"
+                  id="fileInput"
+                  className="sr-only"
+                  aria-label="Upload profile image"
+                  onChange={handleImageChange}
+                />
+                <button
+                  onClick={() => document.getElementById("fileInput")?.click()}
+                  type="button"
+                  className="absolute -bottom-1 -right-1 flex h-11 w-11 items-center justify-center rounded-full border border-white bg-slate-950 text-white shadow-lg transition hover:scale-105"
+                  aria-label="Choose profile photo"
+                >
+                  <Image src={uploadimg} alt="upload" className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="inline-flex rounded-full bg-slate-900 px-3 py-1 text-xs font-medium uppercase tracking-[0.24em] text-cyan-200">
+                  {user?.role || "Member"}
+                </div>
+                <p className="mt-3 text-sm text-slate-500">
+                  Keep your profile, role, and contact details current.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button
+                    onClick={handleUpload}
+                    type="button"
+                    disabled={uploading}
+                    className="btn btn-primary px-4 py-2 text-xs"
+                  >
+                    {uploading ? "Uploading..." : "Upload photo"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlelogout}
+                    className="btn btn-secondary px-4 py-2 text-xs"
+                  >
+                    <Image src={logout} alt="logout" width={14} height={14} />
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ProfileInfo
+            email={user?.email || "-"}
+            phone={user?.phoneNumber || ""}
+            name={user?.name || "User Name"}
+            role={user?.role || "Member"}
+          />
+        </div>
+      </aside>
+    </>
   );
 }

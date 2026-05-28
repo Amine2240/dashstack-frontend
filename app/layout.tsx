@@ -108,10 +108,24 @@ export default function RootLayout({
     return (
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} bg-[#07111f] text-white`}
+          className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased`}
         >
-          <div className="flex min-h-screen items-center justify-center">
-            <div className="h-4 w-4 animate-pulse rounded-full bg-cyan-400" />
+          <div className="content-shell flex min-h-screen items-center justify-center px-6">
+            <div className="surface w-full max-w-md p-6">
+              <div className="space-y-4">
+                <div className="skeleton h-4 w-24" />
+                <div className="skeleton h-8 w-3/4" />
+                <div className="skeleton h-4 w-full" />
+                <div className="skeleton h-4 w-5/6" />
+              </div>
+              <div className="mt-6 flex items-center gap-3">
+                <div className="skeleton h-10 w-10 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <div className="skeleton h-3 w-1/2" />
+                  <div className="skeleton h-3 w-2/3" />
+                </div>
+              </div>
+            </div>
           </div>
         </body>
       </html>
@@ -137,7 +151,7 @@ export default function RootLayout({
                 />
 
                 {/* Main Content Area */}
-                <main className="content-shell flex-1 overflow-auto p-5">
+                <main className="content-shell flex-1 overflow-auto p-5 lg:ml-72">
                   {children}
                 </main>
               </div>
