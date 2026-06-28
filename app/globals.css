@@ -127,7 +127,7 @@ body::before {
   }
 
   .skeleton {
-    @apply animate-pulse rounded-2xl bg-white/10;
+    @apply animate-pulse rounded-2xl bg-slate-200;
   }
 
   .surface {

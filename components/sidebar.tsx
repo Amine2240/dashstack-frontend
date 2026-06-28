@@ -62,52 +62,59 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }: SidebarProps) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 z-30 h-full w-72 flex flex-col overflow-y-auto border-r border-slate-200/80 bg-slate-950/95 shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl transition-transform duration-200 transform ${
+      className={`fixed top-0 left-0 z-50 h-full w-72 flex flex-col overflow-y-auto border-r border-white/10 bg-slate-950/95 shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl transition-transform duration-200 transform ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 lg:fixed lg:top-[4.5rem] lg:h-[calc(100vh-4.5rem)]`}
+      } lg:translate-x-0 lg:z-30 lg:top-[4.5rem] lg:h-[calc(100vh-4.5rem)]`}
     >
-      <div className="flex items-center justify-between border-b border-white/10 px-5 py-5">
+      {/* Brand header — only visible on mobile (desktop shows this in the navbar) */}
+      <div className="flex items-center justify-between border-b border-white/10 px-5 py-5 lg:hidden">
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-white/45">
-            AutoTrack
+            DashStack
           </p>
           <p className="mt-1 text-lg font-semibold text-white">
             Command Center
           </p>
         </div>
         <button
-          className="rounded-full border border-white/10 bg-white/5 p-2 text-white/70 transition hover:bg-white/10 lg:hidden"
+          className="rounded-full border border-white/10 bg-white/5 p-2 text-white/70 transition hover:bg-white/10"
           onClick={toggleSidebar}
         >
           <AiOutlineClose size={18} />
         </button>
       </div>
-      <ul className="space-y-2 p-4">
-        {navlinks.map((item) => (
-          <li
-            key={item.id}
-            className={`overflow-hidden rounded-2xl transition duration-200 ${
-              pathname === item.path ||
-              (item.path === "/dashboard" && pathname === "/") // Check for '/' or '/dashboard'
-                ? "bg-cyan-400/15 text-white ring-1 ring-cyan-300/20"
-                : "text-white/70 hover:bg-white/5 hover:text-white"
-            }`}
-          >
-            <Link
-              href={item.path}
-              className="flex items-center w-full gap-3 px-4 py-3 text-[15px] font-medium transition"
+      <ul className="space-y-1 p-4">
+        {navlinks.map((item) => {
+          const isActive =
+            pathname === item.path ||
+            (item.path === "/dashboard" && pathname === "/");
+          return (
+            <li
+              key={item.id}
+              className={`overflow-hidden rounded-xl transition duration-200 ${
+                isActive
+                  ? "bg-cyan-400/15 text-white ring-1 ring-cyan-300/20"
+                  : "text-white/60 hover:bg-white/5 hover:text-white/90"
+              }`}
             >
-              <Image
-                alt="icon"
-                src={item.icon}
-                width={24}
-                height={24}
-                className="opacity-90"
-              />
-              <span>{item.text}</span>
-            </Link>
-          </li>
-        ))}
+              <Link
+                href={item.path}
+                className="flex items-center w-full gap-3 px-4 py-3 text-[14px] font-medium transition"
+              >
+                <Image
+                  alt="icon"
+                  src={item.icon}
+                  width={20}
+                  height={20}
+                  className={`flex-shrink-0 [filter:brightness(0)_invert(1)] transition-opacity ${
+                    isActive ? "opacity-100" : "opacity-50"
+                  }`}
+                />
+                <span>{item.text}</span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
       <div className="mt-auto border-t border-white/10 p-4">
         <div className="rounded-3xl border border-white/10 bg-white/5 p-4 text-white/80 shadow-[0_18px_50px_rgba(15,23,42,0.12)]">
